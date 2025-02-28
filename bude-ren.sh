@@ -7,7 +7,7 @@ fi
 
 docker build -t "$1" "$2"
 if [ $? -eq 0 ]; then
-    docker run --rm -p 2345:443 -it "$1" 
+   docker run --rm -p 2345:443 --env-file srcs/.env "$1" 
 else
     echo "Docker build failed!"
 fi
