@@ -13,6 +13,4 @@ RUN chmod +x /tools/entrypoint.sh
 
 USER mysql
 
-EXPOSE 3306
-
 ENTRYPOINT ["/tools/entrypoint.sh"]

@@ -28,6 +28,7 @@ services:
     restart: always
   wordpress:
     container_name: wordpress
+    hostname: wordpress
     networks:
       - inception
     depends_on:
@@ -36,6 +37,8 @@ services:
       context: requirements/wordpress
       dockerfile: Dockerfile
     env_file: .env
+    ports:
+      - "9000:9000"
     volumes:
       - wordpress:/var/www/wordpress
     restart: always
