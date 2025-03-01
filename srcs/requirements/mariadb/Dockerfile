@@ -6,8 +6,7 @@ RUN apk update --no-cache \
     && chown -R mysql:mysql /var/lib/mysql /run/mysqld \
     && mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 
-VOLUME /var/lib/mysql
-
+COPY conf/mariadb-server.cnf /etc/my.cnf.d/mariadb-server.cnf
 COPY tools/init.sql /tools/init.sql
 COPY tools/entrypoint.sh /tools/entrypoint.sh
 RUN chmod +x /tools/entrypoint.sh
