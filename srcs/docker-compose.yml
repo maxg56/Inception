@@ -13,6 +13,7 @@ services:
     ports:
       - "443:443"
     restart: always
+  
   mariadb:
     container_name: mariadb
     networks:
@@ -24,6 +25,7 @@ services:
     volumes:
       - mariadb:/var/lib/mysql
     restart: always
+  
   wordpress:
     container_name: wordpress
     networks:
@@ -37,7 +39,6 @@ services:
     volumes:
       - wordpress:/var/www/wordpress
     restart: always
-
 
 volumes:
   wordpress:

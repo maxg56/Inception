@@ -20,13 +20,9 @@ RUN apk update --no-cache \
 
 # Configuration de PHP-FPM
 COPY conf/www.conf /etc/php83/php-fpm.d/www.conf
-
-# Copie et permissions du script
 COPY tools/script.sh /tools/script.sh
-RUN chmod +x /tools/script.sh
 
-# Définition du répertoire de travail
-WORKDIR /var/www/wordpress
+RUN chmod +x /tools/script.sh
 
 # Commande d’exécution du conteneur
 CMD [ "/tools/script.sh" ]

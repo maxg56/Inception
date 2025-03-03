@@ -8,6 +8,11 @@ until mysql -h mariadb -u $SQL_USER -p$SQL_PASSWORD -e "SELECT 1" > /dev/null 2>
   sleep 5
 done
 
+if [ -z "$DOMAIN_NAME" ]; then
+  echo "Error: DOMAIN_NAME is not set!"
+  exit 1
+fi
+
 
 # Vérifier si WordPress est déjà installé
 if [ ! -f "/var/www/wordpress/wp-config.php" ]; then
@@ -24,9 +29,11 @@ else
     echo "[1]WordPress is already installed."
 fi
 
-if ! wp core is-installed --path='/var/www/wordpress'; then
+
+if ! wp core is-installed --allow-root --path='/var/www/wordpress'; then
+    echo "Installing WordPress..."
     wp core install \
-        --url="$DOMAIN_NAME/" \
+        --url="$DOMAIN_NAME" \
         --title="$WP_TITLE" \
         --admin_user="$WP_ADMIN_USER" \
         --admin_password="$WP_ADMIN_PASSWORD" \
@@ -34,24 +41,13 @@ if ! wp core is-installed --path='/var/www/wordpress'; then
         --skip-email \
         --allow-root \
         --path='/var/www/wordpress'
-else
-    echo "[2] WordPress is already installed."
-fi
 
-if ! wp user get "$WP_USER_USER" --path='/var/www/wordpress'; then
+    echo "Creating WordPress user..."
     wp user create "$WP_USER_USER" "$WP_USER_EMAIL" \
         --role=author \
         --user_pass="$WP_USER_PASSWORD" \
         --allow-root \
         --path='/var/www/wordpress'
-else
-    echo "[3] User $WP_USER_USER already exists."
-fi
-
-if ! wp theme is-installed astra --path='/var/www/wordpress'; then
-    wp theme install astra --activate --allow-root --path='/var/www/wordpress'
-else
-    echo "[4] Astra theme is already installed."
 fi
 
 
