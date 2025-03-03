@@ -50,24 +50,36 @@ services:
       context: requirements/bonus/redis
       dockerfile: Dockerfile
     volumes:
-      - wordpress:/var/www/wordpress
+      - wordpress:/var/www/
     restart: always
 
-  ftp:
-    container_name: ftp
-    build: requirements/bonus/ftp
-    ports:
-      - "21:21"
-      - "30000-30100:30000-30100"
+  # ftp:
+  #   container_name: ftp
+  #   build: requirements/bonus/ftp
+  #   ports:
+  #     - "21:21"
+  #     - "30000-30100:30000-30100"
+  #   depends_on:
+  #     - wordpress
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - FTP_DIR=/home
+  #   restart: always
+  #   volumes:
+  #     - wordpress:/wp
+  adminer:
+    container_name: adminer
+    networks:
+      - inception
     depends_on:
-      - wordpress
-    env_file:
-      - .env
-    environment:
-      - FTP_DIR=/home
+      - mariadb
+    build:
+      context: requirements/bonus/adminer
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
     restart: always
-    volumes:
-      - wordpress:/wp
 
 
 volumes:
