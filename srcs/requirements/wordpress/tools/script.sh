@@ -50,6 +50,27 @@ if ! wp core is-installed --allow-root --path='/var/www/wordpress'; then
         --path='/var/www/wordpress'
 fi
 
+echo "Setting up WordPress configuration..."
+wp config has WP_REDIS_HOST || wp config set WP_REDIS_HOST "redis" --path=/var/www/wordpress
+wp config has WP_REDIS_PORT || wp config set WP_REDIS_PORT 6379 --raw --path=/var/www/wordpress
+wp config has WP_CACHE || wp config set WP_CACHE true --raw --path=/var/www/wordpress
+
+if ! wp plugin is-installed redis-cache; then
+	wp plugin install redis-cache \
+		--allow-root \
+		--path='/var/www/wordpress'
+fi
+
+if ! wp plugin is-active redis-cache; then
+	wp plugin activate redis-cache \
+		--allow-root \
+		--path='/var/www/wordpress'
+fi
+
+wp redis enable \
+	--allow-root \
+	--path='/var/www/wordpress'
+
 
 mkdir -p /run/php
 

@@ -39,6 +39,19 @@ services:
     volumes:
       - wordpress:/var/www/wordpress
     restart: always
+    
+  redis:
+    container_name: redis
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    build:
+      context: requirements/bonus/redis
+      dockerfile: Dockerfile
+    volumes:
+      - wordpress:/var/www/wordpress
+    restart: always
 
 volumes:
   wordpress:
