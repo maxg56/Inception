@@ -53,6 +53,23 @@ services:
       - wordpress:/var/www/wordpress
     restart: always
 
+  ftp:
+    container_name: ftp
+    build: requirements/bonus/ftp
+    ports:
+      - "21:21"
+      - "30000-30100:30000-30100"
+    depends_on:
+      - wordpress
+    env_file:
+      - .env
+    environment:
+      - FTP_DIR=/home
+    restart: always
+    volumes:
+      - wordpress:/wp
+
+
 volumes:
   wordpress:
     driver: local
