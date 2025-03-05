@@ -1,0 +1,8 @@
+{
+    "type": "mariadb",
+    "port": 3306,
+    "hostname": "mariadb",
+    "username": "w_user",
+    "password": "1234wordpress_user56",
+    "dbName": "kuma"
+}

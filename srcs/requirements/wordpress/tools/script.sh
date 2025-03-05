@@ -3,7 +3,7 @@ set -e
 
 cd /var/www/wordpress
 
-until mysql -h mariadb -u $SQL_USER -p$SQL_PASSWORD -e "SELECT 1" > /dev/null 2>&1; do
+until mysql -h mariadb -u $SQL_wp_user -p$SQL_wp_password -e "SELECT 1" > /dev/null 2>&1; do
   echo "Waiting for MariaDB to be ready..."
   sleep 5
 done

@@ -8,8 +8,8 @@ RUN apk add --no-cache php php-mysqli php-session php-json wget
 RUN mkdir -p /var/www/html && \
     wget -O /var/www/html/index.php https://www.adminer.org/latest.php
 
-EXPOSE 8080
+EXPOSE 600
 
 # Lancer Adminer avec PHP en mode serveur
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "/var/www/html"]
+CMD ["php", "-S", "0.0.0.0:80", "-t", "/var/www/html"]
 

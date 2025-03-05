@@ -1,16 +1,24 @@
-# SPECIFIE LA DISTRIBUTION
 FROM alpine:3.21.2
 
-# Mise à jour et installation des paquets nécessaires
-RUN apk update  --no-cache &&  \
-    apk add --no-cache iputils vsftpd openrc shadow
+# Installer vsftpd et bash
+RUN apk add --no-cache vsftpd bash
 
-# Copier la configuration de vsftpd et le script
-COPY ./conf/vsftpd.conf /etc/
-COPY ./tools/script.sh /tmp/
+# Ajouter un utilisateur FTP et définir son mot de passe
+ARG FTP_USER="ftpuser"
+ARG FTP_PASS="ftp_password"
+RUN adduser -h /home/$FTP_USER -s /bin/sh -D $FTP_USER && \
+    echo "$FTP_USER:$FTP_PASS" | chpasswd
 
-# Donner les permissions d'exécution au script
-RUN chmod +x /tmp/script.sh
+# Créer le dossier FTP et assigner les permissions
+RUN mkdir -p /home/$FTP_USER && \
+    chown -R $FTP_USER:$FTP_USER /home/$FTP_USER
 
-# Entrée du conteneur
-ENTRYPOINT ["/tmp/script.sh"]
+# Copier la configuration FTP
+COPY conf/vsftpd.conf /etc/vsftpd/vsftpd.conf
+
+# Ouvrir les ports FTP et passifs
+EXPOSE 21 40000-50000
+
+# Lancer vsftpd
+CMD ["/usr/sbin/vsftpd", "/etc/vsftpd/vsftpd.conf"]
+

@@ -57,17 +57,20 @@ services:
   #   container_name: ftp
   #   build: requirements/bonus/ftp
   #   ports:
-  #     - "21:21"
-  #     - "30000-30100:30000-30100"
+  #     - "2121:21"
+  #     - "40000-50000:40000-50000"
   #   depends_on:
   #     - wordpress
   #   env_file:
   #     - .env
   #   environment:
+  #     - FTP_USER=ftpuser
+  #     - FTP_PASS=ftp_password
   #     - FTP_DIR=/home
-  #   restart: always
+  #   restart: no
   #   volumes:
-  #     - wordpress:/wp
+  #     - wordpress:/var/www/wordpress
+
   adminer:
     container_name: adminer
     networks:
@@ -78,9 +81,34 @@ services:
       context: requirements/bonus/adminer
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "600:80"
     restart: always
 
+  uptimekuma:
+    container_name: uptimekuma
+    image: inception-uptimekuma
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    build:
+      context: requirements/bonus/UptimeKuma
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma-data:/app/data
+    restart: always
+  websites:
+    container_name: websites
+    networks:
+      - inception
+    build:
+      context: requirements/bonus/websites
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
 
 volumes:
   wordpress:
@@ -95,7 +123,12 @@ volumes:
       type: none
       o: bind
       device: /home/maxence/data/mariadb
-
+  uptime-kuma-data:  # <-- Assure-toi que cette ligne est bien présente !
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/maxence/data/uptimekuma
 networks:
   inception:
     name: inception
