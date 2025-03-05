@@ -1,24 +1,27 @@
-FROM alpine:3.21.2
+ARG BASE_IMG=alpine:3.19
 
-# Installer vsftpd et bash
-RUN apk add --no-cache vsftpd bash
+FROM $BASE_IMG AS pidproxy
 
-# Ajouter un utilisateur FTP et définir son mot de passe
-ARG FTP_USER="ftpuser"
-ARG FTP_PASS="ftp_password"
-RUN adduser -h /home/$FTP_USER -s /bin/sh -D $FTP_USER && \
-    echo "$FTP_USER:$FTP_PASS" | chpasswd
+RUN apk --no-cache add alpine-sdk \
+    && git clone https://github.com/ZentriaMC/pidproxy.git \
+    && cd pidproxy \
+    && git checkout 193e5080e3e9b733a59e25d8f7ec84aee374b9bb \
+    && sed -i 's/-mtune=generic/-mtune=native/g' Makefile \
+    && make \
+    && mv pidproxy /usr/bin/pidproxy \
+    && cd .. \
+    && rm -rf pidproxy \
+    && apk del alpine-sdk
 
-# Créer le dossier FTP et assigner les permissions
-RUN mkdir -p /home/$FTP_USER && \
-    chown -R $FTP_USER:$FTP_USER /home/$FTP_USER
 
-# Copier la configuration FTP
+FROM $BASE_IMG
+
+COPY --from=pidproxy /usr/bin/pidproxy /usr/bin/pidproxy
+RUN apk --no-cache add vsftpd tini
+
+COPY tools/start_vsftpd.sh /bin/start_vsftpd.sh
 COPY conf/vsftpd.conf /etc/vsftpd/vsftpd.conf
 
-# Ouvrir les ports FTP et passifs
-EXPOSE 21 40000-50000
+EXPOSE 21 21000-21010
 
-# Lancer vsftpd
-CMD ["/usr/sbin/vsftpd", "/etc/vsftpd/vsftpd.conf"]
-
+ENTRYPOINT ["/sbin/tini", "--", "/bin/start_vsftpd.sh"]

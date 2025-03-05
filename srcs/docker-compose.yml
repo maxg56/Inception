@@ -53,23 +53,19 @@ services:
       - wordpress:/var/www/
     restart: always
 
-  # ftp:
-  #   container_name: ftp
-  #   build: requirements/bonus/ftp
-  #   ports:
-  #     - "2121:21"
-  #     - "40000-50000:40000-50000"
-  #   depends_on:
-  #     - wordpress
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - FTP_USER=ftpuser
-  #     - FTP_PASS=ftp_password
-  #     - FTP_DIR=/home
-  #   restart: no
-  #   volumes:
-  #     - wordpress:/var/www/wordpress
+  ftp:
+    container_name: ftp
+    build:
+      context: requirements/bonus/ftp
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception
 
   adminer:
     container_name: adminer
