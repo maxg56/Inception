@@ -53,20 +53,6 @@ services:
       - wordpress:/var/www/
     restart: always
 
-  ftp:
-    container_name: ftp
-    build:
-      context: requirements/bonus/ftp
-      dockerfile: Dockerfile
-    env_file: .env
-    ports:
-      - "21:21"
-      - "21100-21110:21100-21110"
-    volumes:
-      - wordpress:/var/www/wordpress
-    networks:
-      - inception
-
   adminer:
     container_name: adminer
     networks:
@@ -119,7 +105,7 @@ volumes:
       type: none
       o: bind
       device: /home/maxence/data/mariadb
-  uptime-kuma-data:  # <-- Assure-toi que cette ligne est bien présente !
+  uptime-kuma-data:
     driver: local
     driver_opts:
       type: none
